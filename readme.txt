@@ -12,6 +12,8 @@ Media Library Alt Fields lets you update image alt text from within the Media Li
 
 Media Library Alt Fields lets you update image alt text from within the Media Library screen without having to edit each image to make updates.
 
+Want even further control over SEO of your images? Check out the SEO Media File Renamer Pro plugin at http://thefrosty.com/product/seo-media-file-renamer-pro/
+
 == Installation ==
 
 Upload the zipped plugin file to your /wp-content/plugins folder and activate. After activation, browse to the Media Library screen and click on the Screen Options dropdown. 
