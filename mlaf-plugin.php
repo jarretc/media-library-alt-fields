@@ -2,7 +2,7 @@
 /*
 Plugin Name: Media Library Alt Fields
 Description: Lets you change image alt text from the media library. Enable column under the <a href="http://codex.wordpress.org/Administration_Screens#Screen_Options">Screen Options</a> dropdown and click on the 'Image Alt Text' check box.
-Version: 1.0
+Version: 1.1
 Author: Jarret Cade
 Author URI: http://810media.com
 Plugin URI: http://jarretcade.com/wordpress-plugins/media-library-alt-fields/
@@ -28,7 +28,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-define( 'MLAF_VERSION', '1.0' );
+define( 'MLAF_VERSION', '1.1' );
 
 add_action( 'admin_enqueue_scripts', 'mlaf_add_js' );
 
@@ -39,24 +39,30 @@ function mlaf_add_js($hook) {
 	wp_enqueue_script( 'mlaf', plugin_dir_url( __FILE__ ).'js/mlaf-script.js', array('jquery'), MLAF_VERSION, true );
 }
 
-function mlaf_field_input( $column, $post_id ) {
+add_action( 'manage_media_custom_column', 'mlaf_field_input' );
+add_filter( 'manage_media_columns', 'mlaf_display_column' );
+
+function mlaf_field_input( $column ) {
 	// Set inputs to display in column
+	if ( $column == 'mlaf-column' ) {
+	global $post;
 	?>
-	<div class="altwrapper" id="wrapper-<?php echo $post_id; ?>">
-		<input type="text" id="alt-<?php echo $post_id; ?>" value="<?php echo wp_strip_all_tags( get_post_meta( $post_id, '_wp_attachment_image_alt', true ) ); ?>" />
-		<input type="button" id="pid-<?php echo $post_id; ?>" value="Save" class="button-primary mlaf-update" style="width: 30px;" />
+	<div class="altwrapper" id="wrapper-<?php echo $post->ID; ?>">
+		<input type="text" id="alt-<?php echo $post->ID; ?>" value="<?php echo wp_strip_all_tags( get_post_meta( $post->ID, '_wp_attachment_image_alt', true ) ); ?>" />
+		<input type="button" id="pid-<?php echo $post->ID; ?>" value="Save" class="button-primary mlaf-update" style="width: 30px;" />
 		<img class="waiting" style="display: none" src="<?php echo esc_url( admin_url( "images/wpspin_light.gif" ) ); ?>" />
 	</div>
 	<?php
 }
-add_action( 'manage_media_custom_column', 'mlaf_field_input', 10, 2 );
+}
 
 function mlaf_display_column( $columns ) {
 	// Register the column to display
-	return array_merge( $columns,
-			array( 'alt' => __( 'Image Alt Text' ) ) );
+	$columns['mlaf-column'] = 'Image Alt Text';
+	return $columns;
+	//return array_merge( $columns,
+			//array( 'alt' => __( 'Image Alt Text' ) ) );
 }
-add_filter( 'manage_media_columns', 'mlaf_display_column' );
 
 add_action( 'wp_ajax_mlaf_alt_update' , 'mlaf_alt_update' );
 
